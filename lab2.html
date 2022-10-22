@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Lab 2</title>
+		<style>
+			body{
+				background-color: #1167b1;
+			}
+			
+			.calculator{
+				display: grid;
+				background-color: #2a9df4;
+				width: 350px;
+				gird-template-columns: 1fr;
+				gap: 20px;
+				padding: 10px;
+				place-items: center;
+			}
+			.calculator_buttons{
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr 1fr;
+				background-color: #2a9df4;
+				padding: 10px;
+				gap: 5px;
+				width: 300px;
+				height: 350px;
+			}
+			.cbutton{
+				background-color: #d0efff;
+				border: 1px solid rgba(0, 0, 0, 0.8);
+				padding: 20px;
+				font-size: 30px;
+				text-align: center;
+			}
+			.calculator_display{
+				background-color: #d0efff;
+				width: 325px;
+				height: 50px;
+				text-align: right;
+				font-size: 32px;
+			}
+		</style>
+		<script>
+			var hoursWorked = "";
+			window.onload = () => {
+				calculator();
+				formValidation();
+			}
+			
+			function formValidation(){
+				const form = document.getElementById("theData");
+				const fname = document.getElementById("fname");
+				const lname = document.getElementById("lname");
+				const sid = document.getElementById("sid");
+				const biography = document.getElementById("biography");
+				const errorMessage = document.getElementById("errorMessage");
+				
+				function fchar(text){
+					var word = text;
+					word.toLowerCase();
+					//console.log(text);
+					word = word[0].toUpperCase() + word.substring(1)
+					//console.log(word);
+					if(word.localeCompare(text) == 0)
+						return true;
+					else
+						return false;
+				}
+				function characterCounter(text){
+					return text.length;
+				}
+				function onlyNumbers(text){
+					return isNaN(text); //Return true if there is something other than numbers
+				}
+				
+				function isValid(){
+					if(fname.value == "")
+						return "Error: Enter first name";
+					else if(lname.value == "")
+						return "Error: Enter last name";
+					else if(sid.value == "")
+						return "Error: Enter Student ID";
+					else if(biography.value == "")
+						return "Error: Enter biography";
+					else if(!fchar(fname.value))
+						return "Error: First letter in first name not capitalized";
+					else if(!fchar(lname.value))
+						return "Error: First letter in last name not capitalized";
+					else if(characterCounter(sid.value) != 9)
+						return "Error: Student ID needs to be 9 digits";
+					else if(onlyNumbers(sid.value))
+						return "Error: Student ID can only be numbers";
+					else if(characterCounter(biography.value) > 25)
+						return "Error: Biography can only be 25 characters wrong";
+					
+					else
+						return true;
+				}
+				
+				form.addEventListener("submit", event => {
+					if(isValid() == true){
+						let alertTextArea = "";
+						alertTextArea += "Form Submission Successful!\n" +
+							"First Name: " + fname.value + "\n" +
+							"Last Name: " + lname.value + "\n" +
+							"Student ID: " + sid.value + "\n" +
+							"Biography: " + biography.value + "\n";
+						alert(alertTextArea);
+					}else{
+						event.preventDefault();
+						console.log(isValid());
+						form.style.backgroundColor = "red";
+						errorMessage.innerHTML = isValid();
+					}
+				})
+			}
+			
+			function calculator(){
+				var sum = 0;
+				var lastOp;
+				
+				const display = document.getElementById("display");
+				const saved = document.getElementById("save");
+				
+				const num0 = document.getElementById("c0");
+				const num1 = document.getElementById("c1");
+				const num2 = document.getElementById("c2");
+				const num3 = document.getElementById("c3");
+				const num4 = document.getElementById("c4");
+				const num5 = document.getElementById("c5");
+				const num6 = document.getElementById("c6");
+				const num7 = document.getElementById("c7");
+				const num8 = document.getElementById("c8");
+				const num9 = document.getElementById("c9");
+				
+				const clear = document.getElementById("cC");
+				const plus = document.getElementById("cPlus");
+				const minus = document.getElementById("cMinus");
+				const multiply = document.getElementById("cTimes");
+				const divide = document.getElementById("cDivide");
+				const solve = document.getElementById("cEqual");
+				
+				function error(){
+					displayUpdate("ERROR: press C");
+				}
+				function displayUpdate(text){
+					display.value = text;
+				}
+				function displayClear(){
+					display.value = "";
+					sum = 0;
+				}
+				function a(text){
+					sum += parseInt(text);
+					lastOp = 'a';
+					displayUpdate("");
+				}
+				function s(text){
+					sum -= parseInt(text);
+					lastOp = 's';
+					displayUpdate("");
+				}
+				function m(text){
+					if(sum != ""){
+						sum *= parseInt(text);
+						displayUpdate("");
+					}else{
+						sum = text;
+						displayUpdate("");
+					}
+					lastOp = 'm';
+				}
+				function d(text){
+					sum /= parseInt(text);
+					displayUpdate("");
+					lastOp = 'd';
+				}
+				function e(){
+					if(lastOp == 'a'){
+						a(display.value);
+						displayUpdate(sum);
+					}else if(lastOp == 's'){
+						s(display.value);
+						displayUpdate(sum);
+					}else if(lastOp == 'm'){
+						m(display.value);
+						displayUpdate(sum);
+					}else if(lastOp == 'd'){
+						d(display.value);
+						displayUpdate(sum);
+					}else{
+						console.log(sum);
+						displayUpdate(sum);
+					}
+				}
+				function saver(){
+					document.getElementById("hw").innerHTML = "Hours Worked This Week: " + sum;
+				}
+				
+				//Buttons
+				num0.addEventListener("click", event => {
+					displayUpdate(0);
+				})
+				num1.addEventListener("click", event => {
+					displayUpdate(1);
+				})
+				num2.addEventListener("click", event => {
+					displayUpdate(2);
+				})
+				num3.addEventListener("click", event => {
+					displayUpdate(3);
+				})
+				num4.addEventListener("click", event => {
+					displayUpdate(4);
+				})
+				num5.addEventListener("click", event => {
+					displayUpdate(5);
+				})
+				num6.addEventListener("click", event => {
+					displayUpdate(6);
+				})
+				num7.addEventListener("click", event => {
+					displayUpdate(7);
+				})
+				num8.addEventListener("click", event => {
+					displayUpdate(8);
+				})
+				num9.addEventListener("click", event => {
+					displayUpdate(9);
+				})
+				
+				//Operations
+				clear.addEventListener("click", event => {
+					displayClear();
+				})
+				plus.addEventListener("click", event => {
+					if(!isNaN(display.value))
+						a(display.value);
+					else
+						error();
+				})
+				minus.addEventListener("click", event => {
+					if(!isNaN(display.value))
+						s(display.value);
+					else
+						error();
+				})
+				multiply.addEventListener("click", event => {
+					if(!isNaN(display.value))
+						m(display.value);
+					else
+						error();
+				})
+				divide.addEventListener("click", event => {
+					if(!isNaN(display.value))
+						d(display.value);
+					else
+						error();
+				})
+				solve.addEventListener("click", event => {
+					if(!isNaN(display.value))
+						e(display.value);
+					else
+						error();
+				})
+				saved.addEventListener("click", event => {
+					saver();
+				})
+			}
+		</script>
+	</head>
+	<body>
+		
+		<!--Form Input-->
+		<form id=theData>
+			<label for="fname">First Name:</label><br>
+			<input type="text" id="fname" name="fname"><br><br>
+			<label for="lname">Last Name:</label><br>
+			<input type="text" id="lname" name="lname"><br><br>
+			<label for="sid">Student ID:</label><br>
+			<input type="text" id="sid" name="sid"><br><br>
+			<label for="biography">Biography:</label><br>
+			<textarea id="biography" name="biography" rows="5" cols="50"></textarea><br><br>
+			<input type="submit" value="Submit"><br><br>
+			<p id="errorMessage"></p>
+		</form>
+		
+		<!--Calculator-->
+		<div class="calculator">
+			<textarea id="display" class="calculator_display"></textarea>
+			<div class="calculator_buttons">
+				<button class="cbutton" id='cPlus'>+</button>
+				<button class="cbutton" id='cMinus'>-</button>
+				<button class="cbutton" id='cTimes'>*</button>
+				<button class="cbutton" id='cDivide'>/</button>
+				<button class="cbutton" id='c6'>6</button>
+				<button class="cbutton" id='c7'>7</button>
+				<button class="cbutton" id='c8'>8</button>
+				<button class="cbutton" id='c9'>9</button>
+				<button class="cbutton" id='c2'>2</button>
+				<button class="cbutton" id='c3'>3</button>
+				<button class="cbutton" id='c4'>4</button>
+				<button class="cbutton" id='c5'>5</button>
+				<button class="cbutton" id='cC'>C</button>
+				<button class="cbutton" id='c0'>0</button>
+				<button class="cbutton" id='c1'>1</button>
+				<button class="cbutton" id='cEqual'>=</button>
+			</div>
+			<button id='save'>SAVE</button>
+			<h3 id="hw">Hours Worked This Week</h3>
+		</div>
+	</body>
+</html>
+
+<!--References Used but not limited to
+		https://www.freecodecamp.org/news/how-to-build-an-html-calculator-app-from-scratch-using-javascript-4454b8714b98/
+		https://www.w3schools.com/
+		https://developer.mozilla.org/en-US/docs/Web/Tutorials
+		https://www.geeksforgeeks.org/
+-->

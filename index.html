@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 3</title>
+
+    <style type="text/css">
+        html {
+            float: center;
+            margin-left: 35%;
+        }
+        
+        #map {
+            height: 400px;
+            width: 50%;
+            border: 3px solid black;
+        }
+        
+        #score {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: 30px;
+            position: absolute;
+        }
+    </style>
+
+    <script>
+        let allBuildingBounds = [{
+            north: 34.23905645604296,
+            south: 34.23878371851054,
+            east: -118.53101568608193,
+            west: -118.53138650145804
+        }, {
+            north: 34.23907048260304,
+            south: 34.23868746421901,
+            east: -118.5302899967048,
+            west: -118.53093329960666,
+        }, {
+            north: 34.23786839527888,
+            south: 34.23737224922154,
+            east: -118.52917873138753,
+            west: -118.52940537803696,
+        }, {
+            north: 34.23876190749848,
+            south: 34.23855535396535,
+            east: -118.52763302438706,
+            west: -118.5288036050761,
+        }, {
+            north: 34.23837961188622,
+            south: 34.23817648097403,
+            east: -118.52763302438706,
+            west: -118.52880084427258,
+        }]
+
+        let buildingNames = ["Sierra Center", "Jerome Richfield Hall", "Santa Susana Hall", "Eucalyptus Hall", "Live Oak Hall"];
+        let index = 0;
+        let correctlyAnswered = 0;
+
+        function initMap() {
+            let options = {
+                zoom: 17,
+                center: {
+                    lat: 34.2383,
+                    lng: -118.53
+                },
+                disableDoubleClickZoom: true,
+                clickableIcons: false,
+                disableDefaultUI: true,
+                gestureHandling: "none", // none
+                styles: [{
+                    featureType: "poi",
+                    stylers: [{
+                        visibility: "off"
+                    }]
+                }, {
+                    featureType: "road",
+                    stylers: [{
+                        visibility: "off"
+                    }]
+                }, {
+                    featureType: "transit",
+                    stylers: [{
+                        visibility: "off"
+                    }]
+                }, {
+                    featureType: 'landscape.man_made',
+                    elementType: 'labels',
+                    stylers: [{
+                        visibility: 'off'
+                    }]
+                }]
+            };
+
+            let map = new google.maps.Map(document.getElementById("map"), options);
+            clickHandler(map);
+        }
+
+        function setRectangle(map, bounds, color) {
+            let building = new google.maps.Rectangle({
+                strokeColor: color,
+                strokeOpacity: 0.8,
+                strokeWeight: 2, // 2
+                fillColor: color,
+                fillOpacity: 0.35, // 0.35
+                map,
+                bounds: bounds,
+            });
+        }
+
+        function buildingQuiz(map, quiz, clickLatitude, clickLongitude, index) {
+            if (clickLatitude <= allBuildingBounds[index].north && clickLatitude >= allBuildingBounds[index].south &&
+                clickLongitude >= allBuildingBounds[index].west && clickLongitude <= allBuildingBounds[index].east) {
+                correctlyAnswered++;
+                setRectangle(map, allBuildingBounds[index], "#00FF00");
+                quiz.innerHTML += "<p>Correct!</p>";
+
+            } else {
+                setRectangle(map, allBuildingBounds[index], "#FF0000");
+                quiz.innerHTML += "<p>Incorrect!</p>";
+            }
+        }
+
+        function scoreAnimated() {
+            let animation = document.getElementById("score");
+            let id = null;
+            let pos = 0;
+            animation.innerHTML = "You scored " + correctlyAnswered + " out of a possible 5 correct!";
+            clearInterval(id);
+            id = setInterval(frame, 3)
+
+            function frame() {
+                if (pos === 1000) {
+                    clearInterval(id);
+                } else {
+                    pos++;
+                    animation.style.top = pos + "px";
+                    animation.style.left = pos + "px";
+                    animation.style.bottom = pos + "px";
+                    animation.style.right = pos + "px";
+                }
+            }
+        }
+
+        function clickHandler(map) {
+            let quiz = document.getElementById("quiz");
+            quiz.innerHTML += "<h1>Identify building " + buildingNames[index] + "</h1>";
+            map.addListener("click", (mapsMouseEvent) => {
+                let clickLatitude = mapsMouseEvent.latLng.toJSON().lat;
+                let clickLongitude = mapsMouseEvent.latLng.toJSON().lng;
+                if (index < 5) {
+                    buildingQuiz(map, quiz, clickLatitude, clickLongitude, index);
+                    index++;
+                    if (index < 5) {
+                        quiz.innerHTML += "<h1>Identify building " + buildingNames[index] + "</h1>";
+                    } else {
+                        scoreAnimated();
+                    }
+                }
+            });
+        }
+        initMap();
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDMiSAwV-04Ehyk5eOBUTxr0zDCE5eaeY&callback=initMap" defer>
+    </script>
+
+</head>
+
+<body>
+    <h1>Building Quiz</h1>
+    <div id="map"></div>
+    <div id="quiz"></div>
+    <div id="score"></div>
+</body>
+
+</html>
